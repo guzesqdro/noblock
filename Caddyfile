@@ -1,24 +1,13 @@
-{
-    auto_https off
-}
-
-:{$PORT:80} {
-    root * /app
+:80 {
+    root * /srv
     encode gzip
 
-    # Cabeceras para que todo se vea bien
-    header * {
-        Access-Control-Allow-Origin *
-        Access-Control-Allow-Methods "GET, POST, OPTIONS"
-        Access-Control-Allow-Headers "*"
-    }
-
-    # SISTEMA PROXY FUNCIONANDO
     handle /ir-a-* {
         uri strip_prefix /ir-a-
         reverse_proxy {uri} {
             header_up Host {upstream_hostport}
-            header_up X-Forwarded-Proto https
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-Proto http
 
             transport http {
                 tls
@@ -27,6 +16,5 @@
         }
     }
 
-    # Servir archivos estáticos
     file_server
 }
