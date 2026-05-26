@@ -1,6 +1,10 @@
-FROM caddy:2-alpine
-WORKDIR /app
+FROM caddy:latest
+
+WORKDIR /srv
+
+COPY . /srv/
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY index.html /app/index.html
+
 EXPOSE 80
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
