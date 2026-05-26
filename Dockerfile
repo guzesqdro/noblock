@@ -1,8 +1,10 @@
-cat > Dockerfile << 'EOF'
 FROM caddy:2-alpine
-WORKDIR /srv
-COPY . /srv/
+
+WORKDIR /app
+
 COPY Caddyfile /etc/caddy/Caddyfile
-EXPOSE 80
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
-EOF
+COPY index.html /app/index.html
+
+EXPOSE 80 443
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
