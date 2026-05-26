@@ -2,20 +2,28 @@
     auto_https off
 }
 
-:80 {
+:{$PORT:80} {
     root * /app
     encode gzip
+
+    header * {
+        Access-Control-Allow-Origin *
+        Access-Control-Allow-Methods "GET, POST, OPTIONS"
+        Access-Control-Allow-Headers "*"
+    }
 
     handle /ir-a-* {
         uri strip_prefix /ir-a-
         reverse_proxy {uri} {
-            header_up Host {upstream_hostport}
+            header_up Host {upstream_host}
             header_up X-Forwarded-Host {host}
-            header_up X-Forwarded-Proto http
+            header_up X-Forwarded-Proto https
+            header_up X-Real-IP {remote}
 
             transport http {
                 tls
                 tls_insecure_skip_verify
+                timeout 300s
             }
         }
     }
