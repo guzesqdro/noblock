@@ -1,12 +1,18 @@
-cat > Caddyfile << 'EOF'
+{
+    auto_https off
+}
+
 :80 {
-    root * /srv
+    root * /app
     encode gzip
 
-    # 🚀 EL SISTEMA PROXY FUNCIONANDO
     handle /ir-a-* {
         uri strip_prefix /ir-a-
         reverse_proxy {uri} {
+            header_up Host {upstream_hostport}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-Proto http
+
             transport http {
                 tls
                 tls_insecure_skip_verify
@@ -14,7 +20,5 @@ cat > Caddyfile << 'EOF'
         }
     }
 
-    # Tu página principal
     file_server
 }
-EOF
