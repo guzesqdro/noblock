@@ -1,0 +1,20 @@
+cat > Caddyfile << 'EOF'
+:80 {
+    root * /srv
+    encode gzip
+
+    # 🚀 EL SISTEMA PROXY FUNCIONANDO
+    handle /ir-a-* {
+        uri strip_prefix /ir-a-
+        reverse_proxy {uri} {
+            transport http {
+                tls
+                tls_insecure_skip_verify
+            }
+        }
+    }
+
+    # Tu página principal
+    file_server
+}
+EOF

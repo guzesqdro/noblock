@@ -1,0 +1,83 @@
+cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noblock - Proxy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#121212',
+                        card: '#1E1E1E',
+                        accent: '#7e22ce',
+                        success: '#10b981',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto { content-visibility: auto; }
+            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            .glow { box-shadow: 0 0 25px rgba(126, 34, 206, 0.3); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-dark to-[#0f172a] text-gray-200 min-h-screen font-sans flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-card/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-purple-900/30 p-8 space-y-6 glow">
+        <div class="text-center space-y-2">
+            <div class="flex items-center justify-center gap-3">
+                <i class="fa fa-unlock-alt text-accent text-3xl"></i>
+                <h1 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold text-white">NOBLOCK</h1>
+            </div>
+            <p class="text-gray-400">Accede a cualquier sitio sin restricciones</p>
+        </div>
+        <form id="proxyForm" class="space-y-4">
+            <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="fa fa-globe"></i></span>
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="Introduce la URL: ej. https://google.com" 
+                    required
+                    class="w-full bg-dark border border-gray-700 rounded-xl py-4 px-11 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-300 text-lg"
+                >
+            </div>
+            <button 
+                type="submit"
+                class="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[0.98] active:scale-[1.02] shadow-lg hover:shadow-accent/20 text-lg"
+            >
+                <i class="fa fa-paper-plane mr-2"></i> Navegar Ahora
+            </button>
+        </form>
+        <div class="bg-dark/50 rounded-xl p-4 border border-gray-800/50">
+            <h3 class="text-sm font-semibold text-gray-300 mb-2 flex items-center"><i class="fa fa-shield-check mr-2 text-accent"></i> Conexión Segura</h3>
+            <p class="text-xs text-gray-500">Tu tráfico pasa por nuestro servidor. Compatible con redes sociales, videos y más.</p>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('proxyForm');
+        const urlInput = document.getElementById('urlInput');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let url = urlInput.value.trim();
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            // ⚡ ESTO SE CAMBIARÁ MÁS TARDE
+            window.location.href = `/ir-a-` + url;
+        });
+    </script>
+</body>
+</html>
+EOF
