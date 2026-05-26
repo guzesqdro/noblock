@@ -1,20 +1,44 @@
+{
+    auto_https off
+}
+
 :80 {
     root * /srv
     encode gzip
 
+    # Permitir conexiones desde cualquier sitio
+    header * Access-Control-Allow-Origin "*"
+    header * Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+    header * Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range"
+    header * Access-Control-Expose-Headers "Content-Length,Content-Range"
+
+    # LA PARTE DEL PROXY CORREGIDA
     handle /ir-a-* {
         uri strip_prefix /ir-a-
+        
         reverse_proxy {uri} {
+            # Enviamos cabeceras reales para que no nos bloqueen
             header_up Host {upstream_hostport}
             header_up X-Forwarded-Host {host}
-            header_up X-Forwarded-Proto http
+            header_up X-Forwarded-Proto https
+            header_up X-Forwarded-For {remote_host}
+            header_up User-Agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
+            # Configuración crítica para que NO SALGA EN BLANCO
             transport http {
                 tls
-                tls_insecure_skip_verify
+                tls_insecure_skip_verify  # <-- Esto evita errores de certificado
+                dial_timeout 30s
+                response_header_timeout 30s
+            }
+            
+            # Reescribir rutas relativas para que carguen CSS, JS e imágenes
+            rewrite_headers {
+                Location ^https?://{upstream_host}(.*) https://{host}/ir-a-$1
             }
         }
     }
 
+    # Servir tu página
     file_server
 }
